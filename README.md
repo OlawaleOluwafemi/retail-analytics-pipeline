@@ -170,7 +170,7 @@ Edit the `cron_schedule` parameter in `orchestrator.py`:
 
 Here is a live look at the production analytics dashboard built inside Apache Superset, tracking our core retail KPIs directly from the ClickHouse Gold layer:
 
-![Apache Superset Retail Dashboard](retail-analytics-pipeline/images/Retail-Analytics-Dashboard.png)
+![Apache Superset Retail Dashboard](retail-analytics-pipeline/images/retail-analytics-dashboard.png)
 
 
 ## 📋 Common Tasks
