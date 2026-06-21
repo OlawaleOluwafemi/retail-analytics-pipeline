@@ -1,0 +1,6 @@
+# Inside transform_dbt/dbt_project.yml
+name: 'transform_dbt'
+version: '1.0.0'
+
+# Change this profile name to match our target profile
+profile: 'retail_pipeline_profile'

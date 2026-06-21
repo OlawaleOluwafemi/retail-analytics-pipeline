@@ -1,0 +1,96 @@
+version: '3.8'
+
+services:
+  # 1. TRANSACTIONAL DATABASE (Source Data Layer)
+  postgres_source:
+    image: postgres:15
+    container_name: postgres-source-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5433:5432"
+    volumes:
+      - pg_source_data:/var/lib/postgresql/data
+    networks:
+      - gold_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s 
+      timeout: 5s
+      retries: 5
+
+  # 2. ANALYTICS ENGINE (Columnar Storage Layer)
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse-analytics-db
+    environment:
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
+      CLICKHOUSE_DB: ${CLICKHOUSE_DB}
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    networks:
+      - gold_network
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:8123/ping || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 3. DAGSTER ORCHESTRATION ENGINE
+  dagster:
+    image: python:3.11-slim
+    container_name: dagster-orchestrator
+    ports:
+      - "3000:3000"
+    environment:
+      - DAGSTER_HOME=/opt/dagster/dagster_home
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - CLICKHOUSE_USER=${CLICKHOUSE_USER}
+      - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
+    volumes:
+      - ./dags_dagster:/opt/dagster/app
+    working_dir: /opt/dagster/app
+    command: bash -c "pip install dagster dagster-webserver dagster-postgres requests && dagster-webserver -h 0.0.0.0 -p 3000"
+    networks:
+      - gold_network
+    depends_on:
+      postgres_source:
+        condition: service_healthy
+
+# 4. SUPERSET PRESENTATION LAYER
+  superset:
+    image: apache/superset:latest
+    container_name: superset-viz
+    user: "root" 
+    ports:
+      - "8088:8088"
+    environment:
+      - SUPERSET_SECRET_KEY=highly_secure_random_string_here_12345
+    # Use global pip but force the installation target path!
+    entrypoint: >
+      /bin/sh -c "
+      echo '=== Forcing ClickHouse driver into site-packages ===' &&
+      pip install --target=/app/.venv/lib/python3.10/site-packages clickhouse-connect &&
+      echo '=== Starting Superset Web Server ===' &&
+      /usr/bin/run-server.sh
+      "
+    networks:
+      - gold_network
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+
+volumes:
+  pg_source_data:
+  clickhouse_data:
+
+networks:
+  gold_network:
+    name: gold_data_shared_net

@@ -1,0 +1,4 @@
+networks:
+  default:
+    external:
+      name: gold_data_shared_net

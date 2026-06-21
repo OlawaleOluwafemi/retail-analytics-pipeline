@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: airbyte_raw
+    database: retail_analyticsdb  # Looks at your ClickHouse DB
+    schema: retail_analyticsdb    # In ClickHouse, schema maps to database
+    tables:
+      - name: raw_transactions

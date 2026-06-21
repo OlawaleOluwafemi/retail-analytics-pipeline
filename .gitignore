@@ -1,0 +1,47 @@
+# Container Environment Credentials
+.env
+
+# Local Storage Volumes (Prevents multi-gigabyte database uploads)
+pg_source_data/
+clickhouse_data/
+
+# Python caching and environment directories
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# Local dbt artifacts
+dbt_project/target/
+dbt_project/dbt_packages/
+dbt_project/logs/
+
+# IDEs and System files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Python environment artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+env/
+venv/
+.pytest_cache/
+
+# Docker & Database runtime storage (Crucial to prevent tracking GBs of data)
+.clickhouse_data/
+clickhouse_data/
+airbyte_data/
+superset_home/
+*.db
+*.log
+
+# Sensitive Credentials and Environment Files
+.env
+*.secret
+credentials.json

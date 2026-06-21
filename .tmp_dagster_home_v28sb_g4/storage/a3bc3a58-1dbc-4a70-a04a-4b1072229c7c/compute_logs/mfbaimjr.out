@@ -1,0 +1,29 @@
+Running with dbt=1.11.11
+Registered adapter: clickhouse=1.10.1
+Found 2 models, 1 source, 530 macros
+
+Concurrency: 1 threads (target='dev')
+
+1 of 2 START sql view model `retail_analyticsdb`.`stg_transactions` ............ [RUN]
+1 of 2 OK created sql view model `retail_analyticsdb`.`stg_transactions` ....... [[32mOK[0m in 0.13s]
+2 of 2 START sql table model `retail_analyticsdb`.`mart_location_performance` .. [RUN]
+2 of 2 ERROR creating sql table model `retail_analyticsdb`.`mart_location_performance`  [[31mERROR[0m in 0.11s]
+
+Finished running 1 table model, 1 view model in 0 hours 0 minutes and 0.51 seconds (0.51s).
+
+[31mCompleted with 1 error, 0 partial successes, and 0 warnings:[0m
+
+[31mFailure in model mart_location_performance (models/gold/mart_location_performance.sql)[0m
+  Database Error in model mart_location_performance (models/gold/mart_location_performance.sql)
+  Received ClickHouse exception, code: 62, server response: Code: 62. DB::Exception: Syntax error: failed at position 858 (`retail_analyticsdb`) (line 33, col 6): `retail_analyticsdb`.`stg_transactions`
+  GROUP BY 
+      store_location, 
+      product_category,
+      transaction_timestamp
+            )
+          
+          . Expected one of: token sequence, Dot, token, OR, AND, IS NOT DISTINCT FROM, IS DISTINCT FROM, IS NOT UNKNOWN, IS UNKNOWN, IS NOT FALSE, IS FALSE, IS NOT TRUE, IS TRUE, IS NULL, IS NOT NULL, BETWEEN, NOT BETWEEN, LIKE, ILIKE, NOT LIKE, NOT ILIKE, REGEXP, IN, NOT IN, GLOBAL IN, GLOBAL NOT IN, MOD, DIV, alias, AS, Comma, FROM, PREWHERE, WHERE, GROUP BY, WITH, HAVING, WINDOW, QUALIFY, ORDER BY, LIMIT, OFFSET, FETCH, SETTINGS, UNION, EXCEPT, INTERSECT. (SYNTAX_ERROR) (for url http://127.0.0.1:8123)
+
+  compiled code at target/run_dbt_transformations_op-a3bc3a5-66886bc/compiled/transform_dbt/models/gold/mart_location_performance.sql
+
+Done. PASS=1 WARN=0 ERROR=1 SKIP=0 NO-OP=0 TOTAL=2

@@ -1,0 +1,22 @@
+Running with dbt=1.11.11
+Registered adapter: clickhouse=1.10.1
+Found 2 models, 1 source, 530 macros
+
+Concurrency: 1 threads (target='dev')
+
+1 of 2 START sql view model `retail_analyticsdb`.`stg_transactions` ............ [RUN]
+1 of 2 OK created sql view model `retail_analyticsdb`.`stg_transactions` ....... [[32mOK[0m in 0.14s]
+2 of 2 START sql table model `retail_analyticsdb`.`mart_location_performance` .. [RUN]
+2 of 2 ERROR creating sql table model `retail_analyticsdb`.`mart_location_performance`  [[31mERROR[0m in 0.14s]
+
+Finished running 1 table model, 1 view model in 0 hours 0 minutes and 0.62 seconds (0.62s).
+
+[31mCompleted with 1 error, 0 partial successes, and 0 warnings:[0m
+
+[31mFailure in model mart_location_performance (models/gold/mart_location_performance.sql)[0m
+  Database Error in model mart_location_performance (models/gold/mart_location_performance.sql)
+  Received ClickHouse exception, code: 215, server response: Code: 215. DB::Exception: Column 'retail_analyticsdb.stg_transactions.transaction_timestamp' is not under aggregate function and not in GROUP BY keys. In query SELECT store_location, product_category, count(transaction_id) AS total_orders, sum(item_count) AS total_items_sold, sum(purchase_amount) AS total_revenue, round(avg(purchase_amount), 2) AS average_order_value, transaction_timestamp AS transaction_date FROM retail_analyticsdb.stg_transactions GROUP BY store_location, product_category. (NOT_AN_AGGREGATE) (for url http://127.0.0.1:8123)
+
+  compiled code at target/run_dbt_transformations_op-09a9ce2-cf972fd/compiled/transform_dbt/models/gold/mart_location_performance.sql
+
+Done. PASS=1 WARN=0 ERROR=1 SKIP=0 NO-OP=0 TOTAL=2
