@@ -58,19 +58,19 @@ A robust, end-to-end data analytics platform for retail transactions, built on t
    Create a `.env` file in the root directory:
    ```bash
    # PostgreSQL Configuration
-   POSTGRES_USER=retail_user
-   POSTGRES_PASSWORD=secure_password_123
-   POSTGRES_DB=retail_db
+   POSTGRES_USER=your_username
+   POSTGRES_PASSWORD=your_password
+   POSTGRES_DB=your_dbname
    
    # ClickHouse Configuration
-   CLICKHOUSE_USER=default
-   CLICKHOUSE_PASSWORD=ch_password_123
-   CLICKHOUSE_DB=analytics
+   CLICKHOUSE_USER=your_username
+   CLICKHOUSE_PASSWORD=your_password
+   CLICKHOUSE_DB=your_dbname
    
    # Airbyte Configuration (if using)
    AIRBYTE_CONNECTION_ID=your_connection_id
-   AIRBYTE_USERNAME=airbyte
-   AIRBYTE_PASSWORD=password
+   AIRBYTE_USERNAME=your_username
+   AIRBYTE_PASSWORD=your_password
    ```
 
 3. **Start all services:**
@@ -142,42 +142,6 @@ retail-analytics-pipeline/
 └── README.md                        # This file
 ```
 
-## 📊 Sample Transformations
-
-### Bronze → Silver Example (DBT)
-```sql
--- Remove duplicates and validate data quality
-SELECT DISTINCT
-    transaction_id,
-    customer_id,
-    product_category,
-    item_count,
-    purchase_amount,
-    payment_method,
-    store_location,
-    transaction_timestamp,
-    CURRENT_TIMESTAMP AS dbt_loaded_at
-FROM {{ source('raw', 'raw_transactions') }}
-WHERE purchase_amount > 0
-  AND customer_id IS NOT NULL
-  AND transaction_timestamp IS NOT NULL
-```
-
-### Silver → Gold Example (DBT)
-```sql
--- Aggregate daily sales by category and location
-SELECT
-    DATE(transaction_timestamp) AS sales_date,
-    product_category,
-    store_location,
-    COUNT(*) AS transaction_count,
-    SUM(purchase_amount) AS total_sales,
-    AVG(purchase_amount) AS avg_transaction_value,
-    MAX(purchase_amount) AS max_transaction,
-    COUNT(DISTINCT customer_id) AS unique_customers
-FROM {{ ref('silver_transactions') }}
-GROUP BY 1, 2, 3
-```
 
 ## 🔧 Configuration
 
@@ -200,12 +164,6 @@ Edit the `cron_schedule` parameter in `orchestrator.py`:
 - `"0 0 * * *"` → Daily at midnight
 - `"0 8 * * 1"` → Weekly on Monday at 8 AM
 
-### ClickHouse Performance Tuning
-
-Edit `clickhouse_config/` files to optimize for your workload:
-- `merge_tree.yml` → Engine-specific settings
-- `compression.yml` → Data compression strategies
-- `query_limits.yml` → Memory and time limits
 
 ## 📋 Common Tasks
 
@@ -223,17 +181,6 @@ docker-compose logs -f
 **Via ClickHouse CLI:**
 ```bash
 docker-compose exec clickhouse clickhouse-client -u default -p password
-```
-
-**Example query:**
-```sql
-SELECT 
-    product_category,
-    COUNT(*) as sales_count,
-    SUM(purchase_amount) as total_revenue
-FROM gold.daily_sales
-GROUP BY product_category
-ORDER BY total_revenue DESC;
 ```
 
 **Via PostgreSQL (source):**
@@ -312,11 +259,6 @@ docker-compose exec postgres_source psycopg2 -h localhost -U retail_user
 # Test ClickHouse
 docker-compose exec clickhouse clickhouse-client --host localhost
 ```
-
-### Memory Issues
-- Reduce DBT thread count: `--threads 2`
-- Lower ClickHouse `max_memory_usage` in config
-- Stop unnecessary services: `docker-compose stop superset`
 
 ## 📚 Resources
 
