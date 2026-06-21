@@ -45,3 +45,13 @@ superset_home/
 .env
 *.secret
 credentials.json
+
+# Dagster temporary files
+.tmp_dagster_home_*
+dagster_home/
+__pycache__/
+*.pyc
+
+# Local environment files (best practice)
+.env
+.venv/
