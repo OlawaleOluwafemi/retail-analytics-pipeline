@@ -1,1 +1,0 @@
-- [Postgres] ──(Airbyte)──> [ClickHouse: Raw Table] ──(dbt SQL transformations)──> [ClickHouse: Final Clean Views]

@@ -47,7 +47,7 @@ services:
     image: python:3.11-slim
     container_name: dagster-orchestrator
     ports:
-      - "3000:3000"
+      - "3000:3000" # Dagster claims port 3000
     environment:
       - DAGSTER_HOME=/opt/dagster/dagster_home
       - POSTGRES_USER=${POSTGRES_USER}
@@ -64,7 +64,7 @@ services:
       postgres_source:
         condition: service_healthy
 
-# 4. SUPERSET PRESENTATION LAYER
+  # 4. SUPERSET PRESENTATION LAYER
   superset:
     image: apache/superset:latest
     container_name: superset-viz
@@ -73,7 +73,6 @@ services:
       - "8088:8088"
     environment:
       - SUPERSET_SECRET_KEY=highly_secure_random_string_here_12345
-    # Use global pip but force the installation target path!
     entrypoint: >
       /bin/sh -c "
       echo '=== Forcing ClickHouse driver into site-packages ===' &&
@@ -87,9 +86,28 @@ services:
       clickhouse:
         condition: service_healthy
 
+  # 5. GRAFANA (Pipeline Ops, Monitoring & Alerts)
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: pipeline_grafana
+    ports:
+      - "3001:3000" # Shifted external port to 3001 to resolve the clash!
+    volumes:
+      - grafana_storage:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - gold_network # Put on the shared network so it can access ClickHouse
+    restart: unless-stopped
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+
+# Root-level configurations
 volumes:
   pg_source_data:
   clickhouse_data:
+  grafana_storage: # Correctly listed under root volumes block
 
 networks:
   gold_network:
