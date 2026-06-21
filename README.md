@@ -159,11 +159,18 @@ retail_pipeline_schedule = ScheduleDefinition(
 )
 ```
 
+
 **To modify the schedule:**
 Edit the `cron_schedule` parameter in `orchestrator.py`:
 - `"0 * * * *"` → Every hour
 - `"0 0 * * *"` → Daily at midnight
 - `"0 8 * * 1"` → Weekly on Monday at 8 AM
+
+### 📊 Analytics Presentation Layer
+
+Here is a live look at the production analytics dashboard built inside Apache Superset, tracking our core retail KPIs directly from the ClickHouse Gold layer:
+
+![Apache Superset Retail Dashboard](retail-analytics-pipeline/images/Retail Analytics Dashboard.png)
 
 
 ## 📋 Common Tasks
