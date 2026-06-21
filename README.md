@@ -6,6 +6,7 @@ A robust, end-to-end data analytics platform for retail transactions, built on t
 
 | Layer | Component | Purpose |
 |-------|-----------|---------|
+| **Generate Data** | Python | Script to generate data pushed to postgres |
 | **Source** | PostgreSQL | Transactional retail database |
 | **Ingestion** | Airbyte | Change Data Capture (CDC) & replication |
 | **Transformation** | DBT | SQL-based data transformations & testing |
