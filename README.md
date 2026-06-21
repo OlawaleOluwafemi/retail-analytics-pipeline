@@ -286,6 +286,47 @@ Contributions are welcome! Please:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
+
+graph TD
+    %% Define Styles and Themes
+    classDef env fill:#1a1a2e,stroke:#16a085,stroke-width:2px,color:#fff;
+    classDef tool fill:#2d3748,stroke:#4a5568,stroke-width:1.5px,color:#fff,font-weight:bold;
+    classDef storage fill:#1a202c,stroke:#3182ce,stroke-width:2px,color:#63b3ed,font-weight:bold;
+    classDef ops fill:#2d3748,stroke:#e53e3e,stroke-width:1.5px,color:#fc8181;
+    classDef bi fill:#2d3748,stroke:#d69e2e,stroke-width:1.5px,color:#f6e05e;
+
+    subgraph WSL2 [WSL2 Ubuntu Environment - Docker Compose Network]
+        %% Sources & Ingestion
+        Src[(Transactional DB / Source)] -->|Extract| AB[Airbyte Ingestion]
+        
+        %% Core Warehouse Breakdown
+        subgraph CH [ClickHouse Columnar Data Warehouse]
+            Bronze[(Bronze Layer: Raw Data)] -->|Transform| Silver[(Silver Layer: Cleaned)]
+            Silver -->|Aggregate| Gold[(Gold Layer: retail_gold Marts)]
+        end
+        
+        AB -->|Load| Bronze
+        
+        %% Orchestration Layer
+        Dagster[Dagster Orchestrator] --->|Trigger Sync| AB
+        Dagster --->|Execute SQL Transformations| CH
+        
+        %% Serving & Monitoring Layers
+        Gold -->|Query Business Metrics| Superset[Apache Superset BI]
+        CH -->|Query Logs & System Errors| Grafana[Grafana Monitoring]
+        
+        %% Notifications
+        Grafana -->|SMTP Email Alert| Alert[Data Ops Notification]
+        Dagster -->|Python Failure Hook| Alert
+    end
+
+    %% Apply Classes to Nodes
+    class WSL2 env;
+    class AB,Dagster tool;
+    class CH,Bronze,Silver,Gold storage;
+    class Superset bi;
+    class Grafana,Alert ops;
+
 ## 📝 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.

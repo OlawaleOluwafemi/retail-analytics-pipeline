@@ -86,22 +86,30 @@ services:
       clickhouse:
         condition: service_healthy
 
-  # 5. GRAFANA (Pipeline Ops, Monitoring & Alerts)
+# 5. GRAFANA (Pipeline Ops, Monitoring & Alerts)
   grafana:
     image: grafana/grafana-oss:latest
     container_name: pipeline_grafana
     ports:
-      - "3001:3000" # Shifted external port to 3001 to resolve the clash!
+      - "3001:3000"
     volumes:
       - grafana_storage:/var/lib/grafana
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
+      
+      # === SECURE SMTP VIA ENVIRONMENT VARIABLES ===
+      - GF_SMTP_ENABLED=true
+      - GF_SMTP_HOST=smtp.gmail.com:587
+      - GF_SMTP_USER=${GRAFANA_SMTP_USER}
+      - GF_SMTP_PASSWORD=${GRAFANA_SMTP_PASSWORD}
+      - GF_SMTP_FROM_ADDRESS=${GRAFANA_SMTP_USER}
+      - GF_SMTP_FROM_NAME=Pipeline Data Ops Alert
+      
     networks:
-      - gold_network # Put on the shared network so it can access ClickHouse
+      - gold_network
     restart: unless-stopped
     depends_on:
-      clickhouse:
-        condition: service_healthy
+      - clickhouse
 
 # Root-level configurations
 volumes:
