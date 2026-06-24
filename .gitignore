@@ -25,6 +25,7 @@ venv/
 pip-log.txt
 pip-delete-this-directory.txt
 .pytest_cache/
+echo ".tmp_dagster_home_*" >> .gitignore
 
 # ==========================================
 # 3. dbt (Data Build Tool) Artifacts
