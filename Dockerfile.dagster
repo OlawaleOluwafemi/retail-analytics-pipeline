@@ -1,0 +1,13 @@
+FROM python:3.11-slim
+
+RUN pip install --no-cache-dir \
+    dagster \
+    dagster-webserver \
+    dagster-postgres \
+    dagster-dbt \
+    dbt-clickhouse \
+    requests \
+    python-dotenv \
+    urllib3
+
+WORKDIR /opt/dagster/app

@@ -1,1 +1,0 @@
-{"_invocation_id": "25101c7b-2fc6-4902-955f-a96ee60f6aa2", "linked": {"0": {"name": "source.transform_dbt.airbyte_raw.raw_transactions", "type": "source", "succ": [1]}, "1": {"name": "model.transform_dbt.stg_transactions", "type": "model", "succ": [2]}, "2": {"name": "model.transform_dbt.mart_location_performance", "type": "model"}}}

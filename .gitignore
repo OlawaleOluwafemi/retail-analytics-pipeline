@@ -1,60 +1,65 @@
-# Container Environment Credentials
+# ==========================================
+# 1. Environment Variables & Security (CRITICAL)
+# ==========================================
 .env
+*.env
+.secrets/
+credentials/
+*.pem
+*.key
 
-# Local Storage Volumes (Prevents multi-gigabyte database uploads)
-pg_source_data/
-clickhouse_data/
-
-# Python caching and environment directories
-__pycache__/
-*.pyc
-.venv/
-venv/
-.pytest_cache/
-
-# Local dbt artifacts
-dbt_project/target/
-dbt_project/dbt_packages/
-dbt_project/logs/
-
-# IDEs and System files
-.DS_Store
-.idea/
-.vscode/
-*.swp
-
-# Python environment artifacts
+# ==========================================
+# 2. Dagster & Python Internal Build Artifacts
+# ==========================================
+.dagster/
+dagster_home/
+storage/
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-.venv/
+.Python
 env/
 venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
 .pytest_cache/
 
-# Docker & Database runtime storage (Crucial to prevent tracking GBs of data)
+# ==========================================
+# 3. dbt (Data Build Tool) Artifacts
+# ==========================================
+# Exclude the target/ and dbt_packages/ directories.
+# We want to exclude target/ because manifest.json is dynamically updated and changes constantly.
+transform_dbt/target/
+transform_dbt/dbt_packages/
+transform_dbt/logs/
+
+# If your dbt folder has a different name, adjust the prefix below:
+**/target/
+**/dbt_packages/
+**/dbt_modules/
+**/logs/
+
+# ==========================================
+# 4. Docker Infrastructure & Database Volumes
+# ==========================================
+# Exclude local database storage engines to prevent committing gigabytes of raw data
 .clickhouse_data/
 clickhouse_data/
-airbyte_data/
-superset_home/
-*.db
-*.log
+postgres_data/
+superset_data/
+grafana_data/
 
-# Sensitive Credentials and Environment Files
-.env
-*.secret
-credentials.json
+# Any localized docker volume directories you created on the host
+**/data/clickhouse/
+**/data/postgres/
 
-# Dagster temporary files
-.tmp_dagster_home_*
-dagster_home/
-__pycache__/
-*.pyc
-
-# Local environment files (best practice)
-.env
-.venv/
-
-# Ignore environment secrets
-.env
+# ==========================================
+# 5. OS & IDE Specific Files
+# ==========================================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
